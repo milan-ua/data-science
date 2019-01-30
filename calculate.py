@@ -33,7 +33,7 @@ class HomePriceRentCalculator(object):
 
     def get_home_rent_price_by_city(self):
         """Shows estimated value for median rent for city"""
-        datafile_name = 'City_MedianRentalPrice_%s' % self.BEDROOM_AMOUNT_FILE_NAMES[self.bedrooms_amount]
+        datafile_name = 'data-files/City_MedianRentalPrice_%s' % self.BEDROOM_AMOUNT_FILE_NAMES[self.bedrooms_amount]
         file_data = pandas.read_csv(datafile_name)
         file_data = file_data.set_index('RegionName')
         dataset = file_data.loc[self.city, file_data.columns[5:]]
@@ -45,7 +45,7 @@ class HomePriceRentCalculator(object):
 
     def get_home_rent_price_by_zip(self):
         """Shows estimated value for median rent for zip code"""
-        datafile_name = 'Zip_MedianRentalPrice_%s' % self.BEDROOM_AMOUNT_FILE_NAMES[self.bedrooms_amount]
+        datafile_name = 'data-files/Zip_MedianRentalPrice_%s' % self.BEDROOM_AMOUNT_FILE_NAMES[self.bedrooms_amount]
         file_data = pandas.read_csv(datafile_name)
         file_data = file_data.set_index('RegionName')
         dataset = file_data.loc[self.zip, file_data.columns[6:]]
@@ -57,7 +57,7 @@ class HomePriceRentCalculator(object):
 
     def get_home_sale_price_by_city(self):
         """Shows estimated value for a home based on median listing price for city"""
-        datafile_name = 'City_MedianListingPrice_%s' % self.BEDROOM_AMOUNT_FILE_NAMES[self.bedrooms_amount]
+        datafile_name = 'data-files/City_MedianListingPrice_%s' % self.BEDROOM_AMOUNT_FILE_NAMES[self.bedrooms_amount]
         file_data = pandas.read_csv(datafile_name)
         file_data = file_data.set_index('RegionName')
         dataset = file_data.loc[self.city, file_data.columns[5:]]
@@ -69,7 +69,7 @@ class HomePriceRentCalculator(object):
 
     def get_home_sale_price_by_zip(self):
         """Shows estimated value for a home based on median listing price for zip code"""
-        datafile_name = 'Zip_MedianListingPrice_%s' % self.BEDROOM_AMOUNT_FILE_NAMES[self.bedrooms_amount]
+        datafile_name = 'data-files/Zip_MedianListingPrice_%s' % self.BEDROOM_AMOUNT_FILE_NAMES[self.bedrooms_amount]
         file_data = pandas.read_csv(datafile_name)
         file_data = file_data.set_index('RegionName')
         dataset = file_data.loc[self.zip, file_data.columns[6:]]
