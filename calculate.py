@@ -1,4 +1,6 @@
 import pandas
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+import numpy as np
 
 
 class HomePriceRentCalculator(object):
@@ -19,17 +21,35 @@ class HomePriceRentCalculator(object):
 
         if self.location_type == self.CITY:
             self.city = input('Please provide City name:')
-            rent_price = self.get_home_rent_price_by_city()
-            sale_price = self.get_home_sale_price_by_city()
+            rent_price, rent_forecast_12m, rent_forecast_60m = self.get_home_rent_price_by_city()
+            sale_price, sale_forecast_12m, sale_forecast_60m = self.get_home_sale_price_by_city()
             print('Estimated price of you home is: %s. Rent price: %s' % (sale_price, rent_price))
+
+            self.process_forecasts(rent_forecast_12m, rent_forecast_60m, sale_forecast_12m, sale_forecast_60m)
+
         elif self.location_type == self.ZIP:
             self.zip = input('Please provide ZIP Code:')
-            rent_price = self.get_home_rent_price_by_zip()
-            sale_price = self.get_home_sale_price_by_zip()
+            rent_price, rent_forecast_12m, rent_forecast_60m = self.get_home_rent_price_by_zip()
+            sale_price, sale_forecast_12m, sale_forecast_60m = self.get_home_sale_price_by_zip()
             print('Estimated price of you home is: %s. Rent price: %s' % (sale_price, rent_price))
+
+            self.process_forecasts(rent_forecast_12m, rent_forecast_60m, sale_forecast_12m, sale_forecast_60m)
+
         else:
             input('Unknown location type "%s". Press Enter to exit' % self.location_type)
             exit()
+
+    @staticmethod
+    def process_forecasts(rent_forecast_12m, rent_forecast_60m, sale_forecast_12m, sale_forecast_60m):
+        show_sale_forecast = input('Show price forecast for 12/60 months? (Y/n)')
+        if show_sale_forecast.lower() in ('y', 'yes'):
+            print('12 month price forecast: %s' % sale_forecast_12m)
+            print('60 month price forecast: %s' % sale_forecast_60m)
+
+        show_rent_forecast = input('Show rent forecast for 12/60 months? (Y/n)')
+        if show_rent_forecast.lower() in ('y', 'yes'):
+            print('12 month rent forecast: %s' % rent_forecast_12m)
+            print('60 month rent forecast: %s' % rent_forecast_60m)
 
     def get_home_rent_price_by_city(self):
         """Shows estimated value for median rent for city"""
@@ -111,7 +131,25 @@ class HomePriceRentCalculator(object):
         # Result for next moth is predicted using Brown's Simple Exponential Smoothing
         result = alpha*series[-1] + (1-alpha)*smoothed_series[-1]
 
-        return result
+        forecast_12m = HomePriceRentCalculator.predict_for_future(series, 12)
+        forecast_60m = HomePriceRentCalculator.predict_for_future(series, 60)
+
+        return result, forecast_12m, forecast_60m
+
+    @staticmethod
+    def predict_for_future(series, month_amount=12):
+        """
+        Predicting using Holt-Winters method and statsmodels library
+        :return:
+        """
+
+        series.Timestamp = pandas.to_datetime(series.index, format='%Y-%m')
+        series.index = series.Timestamp
+        series.index.freq = 'MS'
+
+        model = ExponentialSmoothing(np.asarray(series), seasonal='mul', trend='add', seasonal_periods=12).fit()
+        forecast = model.forecast(month_amount)
+        return forecast
 
 
 HomePriceRentCalculator()
