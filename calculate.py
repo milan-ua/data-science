@@ -34,9 +34,14 @@ class HomePriceRentCalculator(object):
     def get_home_rent_price_by_city(self):
         """Shows estimated value for median rent for city"""
         datafile_name = 'data-files/City_MedianRentalPrice_%s' % self.BEDROOM_AMOUNT_FILE_NAMES[self.bedrooms_amount]
-        file_data = pandas.read_csv(datafile_name)
+        file_data = pandas.read_csv(datafile_name, encoding='latin-1')
         file_data = file_data.set_index('RegionName')
-        dataset = file_data.loc[self.city, file_data.columns[5:]]
+        try:
+            dataset = file_data.loc[self.city, file_data.columns[5:]]
+        except KeyError:
+            print('City "%s" not found in source data for your type of home. '
+                  'Rent price cannot be predicted.' % self.city)
+            return 'NaN'
 
         # calculating estimated rent price for next month (e.g. current) using exponental smoothing
         result = self.calculate_prediction(dataset.dropna())
@@ -46,10 +51,14 @@ class HomePriceRentCalculator(object):
     def get_home_rent_price_by_zip(self):
         """Shows estimated value for median rent for zip code"""
         datafile_name = 'data-files/Zip_MedianRentalPrice_%s' % self.BEDROOM_AMOUNT_FILE_NAMES[self.bedrooms_amount]
-        file_data = pandas.read_csv(datafile_name)
+        file_data = pandas.read_csv(datafile_name, encoding='latin-1')
         file_data = file_data.set_index('RegionName')
-        dataset = file_data.loc[self.zip, file_data.columns[6:]]
-
+        try:
+            dataset = file_data.loc[self.zip, file_data.columns[6:]]
+        except KeyError:
+            print('Zip Code "%s" not found in source data for your type of home. '
+                  'Rent price cannot be predicted.' % self.zip)
+            return 'NaN'
         # calculating estimated rent price for next month (as last one is december of 2018)
         result = self.calculate_prediction(dataset.dropna())
 
@@ -58,9 +67,14 @@ class HomePriceRentCalculator(object):
     def get_home_sale_price_by_city(self):
         """Shows estimated value for a home based on median listing price for city"""
         datafile_name = 'data-files/City_MedianListingPrice_%s' % self.BEDROOM_AMOUNT_FILE_NAMES[self.bedrooms_amount]
-        file_data = pandas.read_csv(datafile_name)
+        file_data = pandas.read_csv(datafile_name, encoding='latin-1')
         file_data = file_data.set_index('RegionName')
-        dataset = file_data.loc[self.city, file_data.columns[5:]]
+        try:
+            dataset = file_data.loc[self.city, file_data.columns[5:]]
+        except KeyError:
+            print('City "%s" not found in source data for your type of home. '
+                  'Home price cannot be predicted.' % self.city)
+            return 'NaN'
 
         # calculating estimated rent price for next month (as last one is december of 2018)
         result = self.calculate_prediction(dataset.dropna())
@@ -70,9 +84,14 @@ class HomePriceRentCalculator(object):
     def get_home_sale_price_by_zip(self):
         """Shows estimated value for a home based on median listing price for zip code"""
         datafile_name = 'data-files/Zip_MedianListingPrice_%s' % self.BEDROOM_AMOUNT_FILE_NAMES[self.bedrooms_amount]
-        file_data = pandas.read_csv(datafile_name)
+        file_data = pandas.read_csv(datafile_name, encoding='latin-1')
         file_data = file_data.set_index('RegionName')
-        dataset = file_data.loc[self.zip, file_data.columns[6:]]
+        try:
+            dataset = file_data.loc[self.zip, file_data.columns[6:]]
+        except KeyError:
+            print('Zip Code "%s" not found in source data for your type of home. '
+                  'Home price cannot be predicted.' % self.zip)
+            return 'NaN'
 
         # calculating estimated rent price for next month (as last one is december of 2018)
         result = self.calculate_prediction(dataset.dropna())
