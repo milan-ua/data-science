@@ -16,7 +16,7 @@ def train_model():
     series.index = series.Timestamp
     series.index.freq = 'MS'
 
-    train, test = train_test_split(series, test_size=0.2, shuffle=False)
+    train, test = train_test_split(series, test_size=0.1, shuffle=False)
 
     model = ExponentialSmoothing(np.asarray(train), seasonal='mul', trend='add', seasonal_periods=12).fit()
     predict = model.forecast(len(test))
